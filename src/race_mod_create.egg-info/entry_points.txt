@@ -1,2 +1,0 @@
-[console_scripts]
-race-mod-create = race_mod_create.cli:main
