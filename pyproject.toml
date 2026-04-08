@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "race-mod-create"
+version = "1.0.0"
+description = "Generate race simulator MOD files for courses and racing cars"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "KamakuraDeveloper"},
+]
+keywords = ["racing", "simulator", "mod", "assetto-corsa", "rfactor"]
+
+[project.scripts]
+race-mod-create = "race_mod_create.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src"]

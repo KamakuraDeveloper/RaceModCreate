@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: race-mod-create
+Version: 1.0.0
+Summary: Generate race simulator MOD files for courses and racing cars
+Author: KamakuraDeveloper
+License: MIT
+Keywords: racing,simulator,mod,assetto-corsa,rfactor
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+
+# RaceModCreate
+好きなサーキットや車のMODを色んな実行環境向けに生成します。
