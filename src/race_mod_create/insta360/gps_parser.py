@@ -174,6 +174,9 @@ class Insta360GpsParser:
         if not file_path.exists():
             raise FileNotFoundError(f"GPXファイルが見つかりません: {file_path}")
 
+        # XMLを安全に解析します。
+        # Python 3.8+ の xml.etree.ElementTree はデフォルトで
+        # 外部エンティティの自動読み込みを行わないため安全です。
         tree = ET.parse(file_path)  # noqa: S314
         root = tree.getroot()
         points: list[GpsPoint] = []
