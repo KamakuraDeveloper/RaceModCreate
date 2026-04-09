@@ -159,13 +159,20 @@ class AssettoCorsaGenerator(BaseGenerator):
         )
 
     def _write_car_ini(self, root: Path, car: Car) -> None:
+        # Scale inertia proportionally to mass (reference: 1300 kg → 1500/1700/200)
+        scale = car.mass_kg / 1300.0
+        inertia_yaw = 1500.0 * scale
+        inertia_pitch = 1700.0 * scale
+        inertia_roll = 200.0 * scale
+        fuel = car.fuel_capacity_l if car.fuel_capacity_l > 0 else 100.0
+
         content = (
             "[BASIC]\n"
             f"MODEL={car.manufacturer} {car.name}\n"
             f"SCREEN_NAME={car.manufacturer} {car.name}\n"
             f"TOTALMASS={car.mass_kg:.0f}\n"
-            f"INERTIA=1500 1700 200\n"
-            f"FUEL=100\n"
+            f"INERTIA={inertia_yaw:.0f} {inertia_pitch:.0f} {inertia_roll:.0f}\n"
+            f"FUEL={fuel:.0f}\n"
         )
         self._write_file(root / "data" / "car.ini", content)
 

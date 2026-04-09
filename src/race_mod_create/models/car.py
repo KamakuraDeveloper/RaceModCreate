@@ -16,6 +16,7 @@ class CarClass(str, Enum):
     TOURING = "Touring"
     RALLY = "Rally"
     OPEN_WHEEL = "OpenWheel"
+    KART = "Kart"
 
 
 @dataclass
@@ -88,6 +89,10 @@ class Car:
         engine:         Engine specification.
         mass_kg:        Total vehicle mass in kilograms.
         tyres:          Available tyre compounds (front and rear combined list).
+        wheelbase_mm:   Wheelbase in millimetres (optional).
+        front_track_mm: Front axle track width in millimetres (optional).
+        rear_track_mm:  Rear axle track width in millimetres (optional).
+        fuel_capacity_l: Fuel tank capacity in litres (optional).
         description:    Optional free-text description.
         author:         Mod author name.
         version:        Mod version string (default "1.0").
@@ -100,6 +105,10 @@ class Car:
     engine: EngineSpec
     mass_kg: float
     tyres: List[TyreSpec] = field(default_factory=list)
+    wheelbase_mm: float = 0.0
+    front_track_mm: float = 0.0
+    rear_track_mm: float = 0.0
+    fuel_capacity_l: float = 0.0
     description: str = ""
     author: str = "Unknown"
     version: str = "1.0"

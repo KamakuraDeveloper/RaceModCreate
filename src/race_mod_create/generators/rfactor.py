@@ -118,17 +118,41 @@ class RFactorGenerator(BaseGenerator):
         self._write_file(root / f"{car_id}.veh", content)
 
     def _write_hdv(self, root: Path, car_id: str, car: Car) -> None:
+        # Scale inertia proportionally to mass (reference: 1300 kg → 1000/1200/150)
+        scale = car.mass_kg / 1300.0
+        inertia_yaw = 1000.0 * scale
+        inertia_pitch = 1200.0 * scale
+        inertia_roll = 150.0 * scale
+
+        # Use explicit chassis dimensions when provided, otherwise derive from mass
+        if car.wheelbase_mm > 0:
+            front_wb = car.wheelbase_mm / 2000.0  # mm → m, split front/rear
+            rear_wb = front_wb
+        else:
+            front_wb = 1.5
+            rear_wb = 1.5
+
+        if car.front_track_mm > 0:
+            front_tw = car.front_track_mm / 1000.0
+        else:
+            front_tw = 1.5
+
+        if car.rear_track_mm > 0:
+            rear_tw = car.rear_track_mm / 1000.0
+        else:
+            rear_tw = 1.5
+
         content = (
             f"[GENERAL]\n"
             f"Mass = {car.mass_kg:.1f}           // kg, including driver\n"
-            f"Inertia = (1000.0, 1200.0, 150.0) // kg*m^2 (yaw, pitch, roll)\n"
+            f"Inertia = ({inertia_yaw:.1f}, {inertia_pitch:.1f}, {inertia_roll:.1f})"
+            f" // kg*m^2 (yaw, pitch, roll)\n"
             f"\n"
             f"[SUSPENSION]\n"
-            f"// Placeholder – tune for your car\n"
-            f"FrontWheelbase = 1.5\n"
-            f"RearWheelbase  = 1.5\n"
-            f"FrontTrackWidth = 1.5\n"
-            f"RearTrackWidth  = 1.5\n"
+            f"FrontWheelbase = {front_wb:.3f}\n"
+            f"RearWheelbase  = {rear_wb:.3f}\n"
+            f"FrontTrackWidth = {front_tw:.3f}\n"
+            f"RearTrackWidth  = {rear_tw:.3f}\n"
         )
         self._write_file(root / f"{car_id}.hdv", content)
 
