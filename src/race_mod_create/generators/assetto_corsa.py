@@ -79,21 +79,21 @@ class AssettoCorsaGenerator(BaseGenerator):
     def _write_surfaces_ini(self, root: Path, track: Track) -> None:
         surface = track.surface.value.upper()
         lines = [
-            f"[SURFACE_0]",
+            "[SURFACE_0]",
             f"KEY={surface}",
-            f"FRICTION=0.96",
-            f"DAMPING=0.0",
-            f"WAV=",
-            f"WAV_PITCH=0",
-            f"FF_EFFECT=NULL",
-            f"DIRT_ADDITIVE=0",
-            f"IS_VALID_TRACK=1",
-            f"BLACK_FLAG_TIME=0",
-            f"SIN_HEIGHT=0",
-            f"SIN_LENGTH=0",
-            f"IS_PITLANE=0",
-            f"VIBRATION_GAIN=0",
-            f"VIBRATION_LENGTH=0",
+            "FRICTION=0.96",
+            "DAMPING=0.0",
+            "WAV=",
+            "WAV_PITCH=0",
+            "FF_EFFECT=NULL",
+            "DIRT_ADDITIVE=0",
+            "IS_VALID_TRACK=1",
+            "BLACK_FLAG_TIME=0",
+            "SIN_HEIGHT=0",
+            "SIN_LENGTH=0",
+            "IS_PITLANE=0",
+            "VIBRATION_GAIN=0",
+            "VIBRATION_LENGTH=0",
         ]
         self._write_file(root / "data" / "surfaces.ini", "\n".join(lines) + "\n")
 

@@ -1,0 +1,8 @@
+# Copilot cloud agent pre-setup steps
+# Installs the package and its dev dependencies so the agent environment
+# is ready to run tests and linting immediately.
+# See: https://docs.github.com/en/copilot/customizing-copilot/customizing-the-development-environment-for-copilot-coding-agent
+
+steps:
+  - name: Install Python dev dependencies
+    run: pip install -e ".[dev]"

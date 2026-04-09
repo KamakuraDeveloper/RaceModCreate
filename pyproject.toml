@@ -14,6 +14,12 @@ authors = [
 ]
 keywords = ["racing", "simulator", "mod", "assetto-corsa", "rfactor"]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+]
+
 [project.scripts]
 race-mod-create = "race_mod_create.cli:main"
 

@@ -20,11 +20,10 @@ from __future__ import annotations
 
 import argparse
 import sys
-from pathlib import Path
 
 from race_mod_create.generators.assetto_corsa import AssettoCorsaGenerator
 from race_mod_create.generators.rfactor import RFactorGenerator
-from race_mod_create.models.car import Car, CarClass, EngineSpec, TyreSpec
+from race_mod_create.models.car import Car, CarClass, EngineSpec
 from race_mod_create.models.track import Track, SurfaceType
 
 _SIMULATORS = {

@@ -1,9 +1,6 @@
 """Tests for the CLI entry point."""
 
-import json
-from pathlib import Path
 
-import pytest
 
 from race_mod_create.cli import main
 
