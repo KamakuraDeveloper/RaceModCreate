@@ -27,6 +27,12 @@ from race_mod_create.models.track import Track
 # 1 kW = ~1.341 metric horsepower (used for Assetto Corsa ui_car.json display)
 KW_TO_BHP = 1.341
 
+# Reference mass (kg) used to scale inertia values proportionally.
+_REF_MASS_KG = 1300.0
+
+# Default fuel capacity in litres when not specified.
+_DEFAULT_FUEL_L = 100.0
+
 
 def _to_id(name: str) -> str:
     """Convert a display name to a lowercase ASCII identifier."""
@@ -159,12 +165,12 @@ class AssettoCorsaGenerator(BaseGenerator):
         )
 
     def _write_car_ini(self, root: Path, car: Car) -> None:
-        # Scale inertia proportionally to mass (reference: 1300 kg → 1500/1700/200)
-        scale = car.mass_kg / 1300.0
+        # Scale inertia proportionally to mass
+        scale = car.mass_kg / _REF_MASS_KG
         inertia_yaw = 1500.0 * scale
         inertia_pitch = 1700.0 * scale
         inertia_roll = 200.0 * scale
-        fuel = car.fuel_capacity_l if car.fuel_capacity_l > 0 else 100.0
+        fuel = car.fuel_capacity_l if car.fuel_capacity_l > 0 else _DEFAULT_FUEL_L
 
         content = (
             "[BASIC]\n"

@@ -21,6 +21,12 @@ from race_mod_create.generators.base import BaseGenerator
 from race_mod_create.models.car import Car
 from race_mod_create.models.track import Track
 
+# Reference mass (kg) used to scale inertia values proportionally.
+_REF_MASS_KG = 1300.0
+
+# Default chassis dimension in metres when not specified on the Car model.
+_DEFAULT_DIM_M = 1.5
+
 
 def _to_id(name: str) -> str:
     """Convert a display name to a CamelCase-safe ASCII identifier."""
@@ -118,29 +124,29 @@ class RFactorGenerator(BaseGenerator):
         self._write_file(root / f"{car_id}.veh", content)
 
     def _write_hdv(self, root: Path, car_id: str, car: Car) -> None:
-        # Scale inertia proportionally to mass (reference: 1300 kg → 1000/1200/150)
-        scale = car.mass_kg / 1300.0
+        # Scale inertia proportionally to mass
+        scale = car.mass_kg / _REF_MASS_KG
         inertia_yaw = 1000.0 * scale
         inertia_pitch = 1200.0 * scale
         inertia_roll = 150.0 * scale
 
-        # Use explicit chassis dimensions when provided, otherwise derive from mass
+        # Use explicit chassis dimensions when provided, otherwise use defaults
         if car.wheelbase_mm > 0:
             front_wb = car.wheelbase_mm / 2000.0  # mm → m, split front/rear
             rear_wb = front_wb
         else:
-            front_wb = 1.5
-            rear_wb = 1.5
+            front_wb = _DEFAULT_DIM_M
+            rear_wb = _DEFAULT_DIM_M
 
         if car.front_track_mm > 0:
             front_tw = car.front_track_mm / 1000.0
         else:
-            front_tw = 1.5
+            front_tw = _DEFAULT_DIM_M
 
         if car.rear_track_mm > 0:
             rear_tw = car.rear_track_mm / 1000.0
         else:
-            rear_tw = 1.5
+            rear_tw = _DEFAULT_DIM_M
 
         content = (
             f"[GENERAL]\n"
