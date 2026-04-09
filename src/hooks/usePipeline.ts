@@ -122,9 +122,10 @@ export function usePipeline() {
 
   // Cleanup on unmount
   useEffect(() => {
+    const refs = timerRefs.current;
     return () => {
-      timerRefs.current.forEach((id) => clearInterval(id));
-      timerRefs.current.clear();
+      refs.forEach((id) => clearInterval(id));
+      refs.clear();
     };
   }, []);
 

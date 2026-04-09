@@ -1,4 +1,4 @@
-import { createContext, useReducer, useCallback, type ReactNode } from 'react';
+import { useReducer, useCallback, type ReactNode } from 'react';
 import type {
   PipelineState,
   PipelineAction,
@@ -9,6 +9,8 @@ import type {
 } from '../types/pipeline';
 import { PhaseStatus } from '../types/pipeline';
 import { DEFAULT_PIPELINE_STATE } from '../config/defaults';
+import { PipelineContext } from './pipelineContext';
+import type { PipelineContextValue } from './pipelineContext';
 
 function pipelineReducer(state: PipelineState, action: PipelineAction): PipelineState {
   switch (action.type) {
@@ -137,21 +139,8 @@ function pipelineReducer(state: PipelineState, action: PipelineAction): Pipeline
   }
 }
 
-export interface PipelineContextValue {
-  state: PipelineState;
-  dispatch: React.Dispatch<PipelineAction>;
-  startPhase: (phase: PipelinePhase) => void;
-  pausePhase: (phase: PipelinePhase) => void;
-  resumePhase: (phase: PipelinePhase) => void;
-  completePhase: (phase: PipelinePhase, metrics: PhaseMetrics) => void;
-  errorPhase: (phase: PipelinePhase, error: string) => void;
-  updateProgress: (phase: PipelinePhase, progress: number, metrics?: Partial<PhaseMetrics>, etr?: number) => void;
-  addLog: (phase: PipelinePhase, level: LogLevel, message: string) => void;
-  setActivePhase: (phase: PipelinePhase) => void;
-  resetPipeline: () => void;
-}
-
-export const PipelineContext = createContext<PipelineContextValue | null>(null);
+export { PipelineContext } from './pipelineContext';
+export type { PipelineContextValue } from './pipelineContext';
 
 export function PipelineProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(pipelineReducer, DEFAULT_PIPELINE_STATE);

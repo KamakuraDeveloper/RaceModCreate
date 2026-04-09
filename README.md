@@ -1,73 +1,141 @@
-# React + TypeScript + Vite
+# TRACK::FORGE
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Insta360 360°映像からレースシミュレータMODを自動生成するパイプライン管理アプリケーション
 
-Currently, two official plugins are available:
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF)](https://vite.dev/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 概要
 
-## React Compiler
+TRACK::FORGEは、Insta360の360°映像からフォトグラメトリ＋3D Gaussian Splattingパイプラインを経て、複数のレースシミュレータ向けコースMODを生成するワークフロー管理アプリケーションです。レーシングテレメトリ風UIで全パイプラインを可視化・制御できます。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 6フェーズ・パイプライン
 
-## Expanding the ESLint configuration
+### Phase 1 — 映像取込 (Video Ingest)
+- Insta360 SDK `.insv` → equirectangularフレーム抽出
+- FlowStateスタビライゼーション制御
+- GPS/IMUメタデータ同期
+- HDRトーンマッピング（ACES/Reinhard/Filmic）
+- 走行速度に応じた1〜10fpsフレーム抽出レート
+- 5760×2880 デフォルト出力解像度
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Phase 2 — SfM再構築 (Structure from Motion)
+- COLMAP + SuperPoint/SuperGlue特徴点マッチング
+- 360°全方位カメラモデル対応（equirectangular/fisheye/pinhole）
+- GPSプリオールによるジオレファレンス
+- バンドル調整＆ロバスト三角測量
+- 最大8192特徴点/画像
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Phase 3 — 3D Gaussian Splatting
+- SfM疎点群からの3D Gaussian配置・学習
+- 位置・共分散・球面調和関数(SH)・不透明度の最適化
+- 微分可能ラスタライゼーション
+- Mip-Splattingアンチエイリアシング
+- 最大200万Gaussian、30,000イテレーション
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Phase 4 — メッシュ変換 (Mesh Conversion)
+- 表面抽出: SuGaR / 2DGS / Poisson から選択
+- UV展開（xatlas/Smart UV/Lightmap）
+- 4K/8Kテクスチャアトラス生成
+- 法線マップ・AOマップベイク
+- LOD生成（最大5段階）
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Phase 5 — コース構築 (Course Build)
+- SAM2路面セグメンテーション
+- GPS軌跡からのレーシングライン自動検出
+- 路面材質分類（アスファルト/縁石/グラベル/芝/砂/ランブルストリップ）
+- グリップマップ生成
+- キャンバー・バリア・ピットレーン検出
+
+### Phase 6 — SIMエクスポート
+5つのシムフォーマットに対応:
+
+| シム | ファイル形式 | 主な特徴 |
+|------|------------|---------|
+| **rFactor 2** | .MAS/.TDF/.AIW/.SCN/.GDB | ダイナミック天候、AIライン、ナイトレース |
+| **Assetto Corsa** | .KN5/surfaces.ini/ai_line.fast/models.ini | カスタムシェーダー、グリップマップ |
+| **ACC** | .KN5/surfaces.ini/track.json/weather.json | UE4レンダリング、ラバービルドアップ |
+| **iRacing** | .W | レーザースキャン精度、マルチクラス |
+| **BeamNG.drive** | .json/.prefab | ソフトボディ物理、地形変形 |
+
+## デフォルト設定
+
+**APG御殿場** (752mコース) がデフォルト設定として搭載されています:
+- 位置: 35.3083°N, 138.9350°E
+- 標高: 468m
+- ターン数: 8
+- コース幅: 8.5m
+
+## セットアップ
+
+```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバー起動
+npm run dev
+
+# プロダクションビルド
+npm run build
+
+# リント実行
+npm run lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 技術スタック
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **フロントエンド**: React 19 + TypeScript 6
+- **ビルドツール**: Vite 8
+- **UI**: レーシングテレメトリ風カスタムCSS（ダークテーマ、ネオンアクセント）
+- **状態管理**: React Context + useReducer
+- **パイプライン**: シミュレーションモード搭載（ブラウザ内デモ）
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## プロジェクト構造
+
 ```
+src/
+├── types/
+│   └── pipeline.ts              # 全TypeScript型定義
+├── config/
+│   ├── defaults.ts              # APG御殿場デフォルト設定
+│   └── simFormats.ts            # シムフォーマット定義
+├── store/
+│   ├── pipelineContext.ts       # React Context定義
+│   └── PipelineContext.tsx      # Provider & Reducer
+├── hooks/
+│   └── usePipeline.ts           # パイプライン操作フック
+└── components/
+    ├── layout/
+    │   ├── Dashboard.tsx        # メインダッシュボード
+    │   ├── Header.tsx           # ヘッダー（ステータス表示）
+    │   └── Sidebar.tsx          # フェーズナビゲーション
+    ├── pipeline/
+    │   ├── PipelineOverview.tsx  # パイプラインフロー図
+    │   ├── PhaseCard.tsx        # フェーズステータスカード
+    │   └── PhaseProgress.tsx    # プログレスバー
+    ├── phases/
+    │   ├── Phase1Ingest.tsx     # 映像取込設定
+    │   ├── Phase2SfM.tsx        # SfM設定
+    │   ├── Phase3GaussianSplat.tsx # 3DGS設定
+    │   ├── Phase4Mesh.tsx       # メッシュ変換設定
+    │   ├── Phase5Course.tsx     # コース構築設定
+    │   └── Phase6Export.tsx     # SIMエクスポート設定
+    ├── controls/
+    │   ├── PipelineControls.tsx # パイプライン制御
+    │   └── ConsoleOutput.tsx    # ログ出力表示
+    ├── visualization/
+    │   ├── Preview3D.tsx        # 3Dプレビュー
+    │   ├── MetricsPanel.tsx     # メトリクス表示
+    │   └── GaussianViewer.tsx   # Gaussianビューア
+    └── common/
+        ├── StatusBadge.tsx      # ステータスバッジ
+        ├── ParameterSlider.tsx  # パラメータスライダー
+        ├── ParameterInput.tsx   # パラメータ入力
+        ├── ProgressRing.tsx     # 円形プログレス
+        └── Tooltip.tsx          # ツールチップ
+```
+
+## ライセンス
+
+MIT
