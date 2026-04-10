@@ -58,6 +58,9 @@ class TestCLIPresets:
         assert "quick_itako" in captured.out
         assert "mobara_twin" in captured.out
         assert "akigase" in captured.out
+        assert "nakai_inter" in captured.out
+        assert "reon" in captured.out
+        assert "JKT KIDS" in captured.out
 
     def test_preset_assetto_corsa(self, tmp_path):
         exit_code = main([

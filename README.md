@@ -23,6 +23,15 @@ The following circuits from the [JKT Kanto (Junior Karting Trophy)](https://jkt-
 | `mobara_twin` | 茂原ツインサーキット | Chiba, Japan | 700 m |
 | `akigase` | サーキット秋ヶ瀬 | Saitama, Japan | 608 m |
 
+### JKT KIDS circuit presets
+
+The following circuits host exclusively the JKT KIDS (Kids Challenge) class:
+
+| Preset key | Circuit name | Location | Length |
+|---|---|---|---|
+| `nakai_inter` | 中井インターサーキット | Kanagawa, Japan | 400 m |
+| `reon` | レオンサーキット | Ibaraki, Japan | 330 m |
+
 ## Installation
 
 ```bash
@@ -97,7 +106,7 @@ from race_mod_create import (
     Track, Sector, SurfaceType,
     Car, CarClass, EngineSpec, TyreSpec,
     AssettoCorsaGenerator, RFactorGenerator,
-    JKT_KANTO_CIRCUITS, get_preset, list_presets,
+    JKT_KANTO_CIRCUITS, JKT_KIDS_CIRCUITS, get_preset, list_presets,
 )
 
 # Use a JKT Kanto preset

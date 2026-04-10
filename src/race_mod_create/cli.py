@@ -32,7 +32,7 @@ from race_mod_create.generators.assetto_corsa import AssettoCorsaGenerator
 from race_mod_create.generators.rfactor import RFactorGenerator
 from race_mod_create.models.car import Car, CarClass, EngineSpec
 from race_mod_create.models.track import Track, SurfaceType
-from race_mod_create.presets import JKT_KANTO_CIRCUITS, get_preset, list_presets
+from race_mod_create.presets import JKT_KANTO_CIRCUITS, JKT_KIDS_CIRCUITS, get_preset, list_presets
 
 _SIMULATORS = {
     "assetto_corsa": AssettoCorsaGenerator,
@@ -112,8 +112,13 @@ def main(argv: list[str] | None = None) -> int:
     # ---- presets listing ---------------------------------------------------
     if args.command == "presets":
         print("Available track presets (JKT Kanto series):")
-        for name in list_presets():
+        for name in sorted(JKT_KANTO_CIRCUITS):
             t = JKT_KANTO_CIRCUITS[name]
+            print(f"  {name:20s}  {t.name} ({t.location}, {t.length_m:.0f}m)")
+        print()
+        print("Available track presets (JKT KIDS only):")
+        for name in sorted(JKT_KIDS_CIRCUITS):
+            t = JKT_KIDS_CIRCUITS[name]
             print(f"  {name:20s}  {t.name} ({t.location}, {t.length_m:.0f}m)")
         return 0
 
