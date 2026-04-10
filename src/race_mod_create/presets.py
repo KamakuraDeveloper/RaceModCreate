@@ -6,6 +6,8 @@ https://jkt-kanto.jp/ and represent the 2026 season venues.
 
 from __future__ import annotations
 
+import copy
+
 from race_mod_create.models.track import SurfaceType, Track
 
 # ---------------------------------------------------------------------------
@@ -62,8 +64,6 @@ def get_preset(name: str) -> Track:
 
     Raises :class:`KeyError` when *name* is not a known preset.
     """
-    import copy
-
     if name not in JKT_KANTO_CIRCUITS:
         available = ", ".join(sorted(JKT_KANTO_CIRCUITS))
         raise KeyError(

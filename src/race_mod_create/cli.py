@@ -143,7 +143,7 @@ def main(argv: list[str] | None = None) -> int:
                 track.version = args.version
         else:
             # Manual mode – name, location, and length are required
-            if not args.name or not args.location or args.length is None:
+            if args.name is None or args.location is None or args.length is None:
                 parser.error(
                     "When --preset is not used, --name, --location, and --length "
                     "are required."
