@@ -7,6 +7,13 @@ Usage examples::
         --name "Suzuka Circuit" --location "Suzuka, Japan" \\
         --length 5807 --pit-boxes 32 --output ./mods
 
+    # Generate a track mod from a JKT Kanto preset
+    race-mod-create track --simulator assetto_corsa \\
+        --preset haruna --output ./mods
+
+    # List available presets
+    race-mod-create presets
+
     # Generate an rFactor car mod
     race-mod-create car --simulator rfactor \\
         --name "GT3 Racer" --manufacturer "SpeedCraft" \\
@@ -25,6 +32,7 @@ from race_mod_create.generators.assetto_corsa import AssettoCorsaGenerator
 from race_mod_create.generators.rfactor import RFactorGenerator
 from race_mod_create.models.car import Car, CarClass, EngineSpec
 from race_mod_create.models.track import Track, SurfaceType
+from race_mod_create.presets import JKT_KANTO_CIRCUITS, get_preset, list_presets
 
 _SIMULATORS = {
     "assetto_corsa": AssettoCorsaGenerator,
@@ -39,24 +47,29 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
+    # ------------------------------------------------------------------ presets
+    sub.add_parser("presets", help="List available track presets.")
+
     # ------------------------------------------------------------------ track
     tp = sub.add_parser("track", help="Generate a track (circuit) MOD.")
     tp.add_argument("--simulator", choices=list(_SIMULATORS), required=True,
                     help="Target race simulator.")
-    tp.add_argument("--name", required=True, help="Track display name.")
-    tp.add_argument("--location", required=True,
+    tp.add_argument("--preset", choices=list_presets(),
+                    help="Use a predefined JKT Kanto circuit preset.")
+    tp.add_argument("--name", help="Track display name.")
+    tp.add_argument("--location",
                     help='Track location, e.g. "Suzuka, Japan".')
-    tp.add_argument("--length", type=float, required=True,
+    tp.add_argument("--length", type=float,
                     help="Track length in metres.")
-    tp.add_argument("--pit-boxes", type=int, default=20,
+    tp.add_argument("--pit-boxes", type=int, default=None,
                     help="Number of pit-lane boxes (default: 20).")
     tp.add_argument("--surface",
                     choices=[s.value for s in SurfaceType],
-                    default=SurfaceType.ASPHALT.value,
+                    default=None,
                     help="Primary road surface type (default: asphalt).")
-    tp.add_argument("--description", default="", help="Optional description.")
-    tp.add_argument("--author", default="Unknown", help="Mod author name.")
-    tp.add_argument("--version", default="1.0", help="Mod version string.")
+    tp.add_argument("--description", default=None, help="Optional description.")
+    tp.add_argument("--author", default=None, help="Mod author name.")
+    tp.add_argument("--version", default=None, help="Mod version string.")
     tp.add_argument("--output", default=".", help="Output directory (default: .).")
 
     # ------------------------------------------------------------------ car
@@ -96,20 +109,55 @@ def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
+    # ---- presets listing ---------------------------------------------------
+    if args.command == "presets":
+        print("Available track presets (JKT Kanto series):")
+        for name in list_presets():
+            t = JKT_KANTO_CIRCUITS[name]
+            print(f"  {name:20s}  {t.name} ({t.location}, {t.length_m:.0f}m)")
+        return 0
+
+    # ---- track / car generation -------------------------------------------
     generator_cls = _SIMULATORS[args.simulator]
     generator = generator_cls(output_dir=args.output)
 
     if args.command == "track":
-        track = Track(
-            name=args.name,
-            location=args.location,
-            length_m=args.length,
-            pit_boxes=args.pit_boxes,
-            surface=SurfaceType(args.surface),
-            description=args.description,
-            author=args.author,
-            version=args.version,
-        )
+        if args.preset:
+            track = get_preset(args.preset)
+            # Allow CLI flags to override preset values
+            if args.name is not None:
+                track.name = args.name
+            if args.location is not None:
+                track.location = args.location
+            if args.length is not None:
+                track.length_m = args.length
+            if args.pit_boxes is not None:
+                track.pit_boxes = args.pit_boxes
+            if args.surface is not None:
+                track.surface = SurfaceType(args.surface)
+            if args.description is not None:
+                track.description = args.description
+            if args.author is not None:
+                track.author = args.author
+            if args.version is not None:
+                track.version = args.version
+        else:
+            # Manual mode – name, location, and length are required
+            if not args.name or not args.location or args.length is None:
+                parser.error(
+                    "When --preset is not used, --name, --location, and --length "
+                    "are required."
+                )
+            track = Track(
+                name=args.name,
+                location=args.location,
+                length_m=args.length,
+                pit_boxes=args.pit_boxes if args.pit_boxes is not None else 20,
+                surface=SurfaceType(args.surface) if args.surface else SurfaceType.ASPHALT,
+                description=args.description or "",
+                author=args.author or "Unknown",
+                version=args.version or "1.0",
+            )
         result = generator.generate_track(track)
         print(f"[{generator.simulator_name}] Track MOD generated: {result}")
 
@@ -129,9 +177,9 @@ def main(argv: list[str] | None = None) -> int:
             year=args.year,
             engine=engine,
             mass_kg=args.mass_kg,
-            description=args.description,
-            author=args.author,
-            version=args.version,
+            description=args.description or "",
+            author=args.author or "Unknown",
+            version=args.version or "1.0",
         )
         result = generator.generate_car(car)
         print(f"[{generator.simulator_name}] Car MOD generated: {result}")

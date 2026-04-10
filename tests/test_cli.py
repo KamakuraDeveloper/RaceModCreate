@@ -1,6 +1,6 @@
 """Tests for the CLI entry point."""
 
-
+import json
 
 from race_mod_create.cli import main
 
@@ -46,6 +46,63 @@ class TestCLITrack:
             "--output", str(tmp_path),
         ])
         assert exit_code == 0
+
+
+class TestCLIPresets:
+    def test_list_presets(self, capsys):
+        exit_code = main(["presets"])
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        assert "haruna" in captured.out
+        assert "festika_tochigi" in captured.out
+        assert "quick_itako" in captured.out
+        assert "mobara_twin" in captured.out
+        assert "akigase" in captured.out
+
+    def test_preset_assetto_corsa(self, tmp_path):
+        exit_code = main([
+            "track",
+            "--simulator", "assetto_corsa",
+            "--preset", "haruna",
+            "--output", str(tmp_path),
+        ])
+        assert exit_code == 0
+        ui_file = tmp_path / "content" / "tracks" / "ui" / "ui_track.json"
+        assert ui_file.exists()
+        data = json.loads(ui_file.read_text())
+        assert data["name"] == "榛名モータースポーツランド"
+        assert data["length"] == "900"
+
+    def test_preset_rfactor(self, tmp_path):
+        exit_code = main([
+            "track",
+            "--simulator", "rfactor",
+            "--preset", "akigase",
+            "--output", str(tmp_path),
+        ])
+        assert exit_code == 0
+        locations_dir = tmp_path / "GameData" / "Locations"
+        track_dirs = list(locations_dir.iterdir())
+        assert len(track_dirs) == 1
+        gdb_files = list(track_dirs[0].glob("*.gdb"))
+        assert len(gdb_files) == 1
+        content = gdb_files[0].read_text()
+        assert "サーキット秋ヶ瀬" in content
+        assert "608" in content
+
+    def test_preset_with_author_override(self, tmp_path):
+        exit_code = main([
+            "track",
+            "--simulator", "assetto_corsa",
+            "--preset", "quick_itako",
+            "--author", "CustomAuthor",
+            "--output", str(tmp_path),
+        ])
+        assert exit_code == 0
+        ui_file = tmp_path / "content" / "tracks" / "ui" / "ui_track.json"
+        data = json.loads(ui_file.read_text())
+        assert data["author"] == "CustomAuthor"
+        assert data["name"] == "クイック潮来"
 
 
 class TestCLICar:

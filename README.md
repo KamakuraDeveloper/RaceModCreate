@@ -11,6 +11,18 @@ Generate MOD files for racing circuits and cars, compatible with multiple race s
 | Assetto Corsa | ✅ | ✅ |
 | rFactor | ✅ | ✅ |
 
+## JKT Kanto circuit presets
+
+The following circuits from the [JKT Kanto (Junior Karting Trophy)](https://jkt-kanto.jp/) series are available as built-in presets:
+
+| Preset key | Circuit name | Location | Length |
+|---|---|---|---|
+| `haruna` | 榛名モータースポーツランド | Gunma, Japan | 900 m |
+| `festika_tochigi` | フェスティカサーキット栃木 | Tochigi, Japan | 628 m |
+| `quick_itako` | クイック潮来 | Ibaraki, Japan | 700 m |
+| `mobara_twin` | 茂原ツインサーキット | Chiba, Japan | 700 m |
+| `akigase` | サーキット秋ヶ瀬 | Saitama, Japan | 608 m |
+
 ## Installation
 
 ```bash
@@ -21,7 +33,32 @@ pip install -e .
 
 ### Command-line interface
 
-**Generate a track MOD (Assetto Corsa)**
+**List available circuit presets**
+
+```bash
+race-mod-create presets
+```
+
+**Generate a track MOD from a JKT Kanto preset (Assetto Corsa)**
+
+```bash
+race-mod-create track \
+  --simulator assetto_corsa \
+  --preset haruna \
+  --output ./mods
+```
+
+**Override preset values**
+
+```bash
+race-mod-create track \
+  --simulator assetto_corsa \
+  --preset mobara_twin \
+  --author "MyName" \
+  --output ./mods
+```
+
+**Generate a track MOD manually (Assetto Corsa)**
 
 ```bash
 race-mod-create track \
@@ -60,9 +97,16 @@ from race_mod_create import (
     Track, Sector, SurfaceType,
     Car, CarClass, EngineSpec, TyreSpec,
     AssettoCorsaGenerator, RFactorGenerator,
+    JKT_KANTO_CIRCUITS, get_preset, list_presets,
 )
 
-# Define a track
+# Use a JKT Kanto preset
+track = get_preset("haruna")
+gen = AssettoCorsaGenerator(output_dir="./mods")
+mod_path = gen.generate_track(track)
+print(f"Generated: {mod_path}")
+
+# Or define a track manually
 track = Track(
     name="Suzuka Circuit",
     location="Suzuka, Japan",
@@ -74,8 +118,6 @@ track = Track(
         Sector("S3", 1507),
     ],
 )
-
-# Generate for Assetto Corsa
 gen = AssettoCorsaGenerator(output_dir="./mods")
 mod_path = gen.generate_track(track)
 print(f"Generated: {mod_path}")
