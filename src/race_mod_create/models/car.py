@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List
 
 
 class CarClass(str, Enum):
@@ -99,7 +98,7 @@ class Car:
     year: int
     engine: EngineSpec
     mass_kg: float
-    tyres: List[TyreSpec] = field(default_factory=list)
+    tyres: list[TyreSpec] = field(default_factory=list)
     description: str = ""
     author: str = "Unknown"
     version: str = "1.0"

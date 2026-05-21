@@ -1,6 +1,6 @@
 """Tests for the CLI entry point."""
 
-
+import pytest
 
 from race_mod_create.cli import main
 
@@ -88,3 +88,11 @@ class TestCLICar:
         car_dir = tmp_path / "content" / "cars" / "testco_racer_x"
         engine_ini = (car_dir / "data" / "engine.ini").read_text()
         assert "NATURALLY_ASPIRATED=0" in engine_ini
+
+    def test_invalid_mass_shows_error(self, tmp_path):
+        args = self._base_car_args(tmp_path)
+        # Replace --mass-kg 1300 with 0 (invalid)
+        idx = args.index("--mass-kg") + 1
+        args[idx] = "0"
+        with pytest.raises(SystemExit):
+            main(args)

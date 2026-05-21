@@ -24,8 +24,17 @@ from race_mod_create.generators.base import BaseGenerator
 from race_mod_create.models.car import Car
 from race_mod_create.models.track import Track
 
-# 1 kW = ~1.341 metric horsepower (used for Assetto Corsa ui_car.json display)
+# 1 kW = ~1.341 brake horsepower (BHP) (used for Assetto Corsa ui_car.json display)
 KW_TO_BHP = 1.341
+
+# Friction coefficients per surface type for Assetto Corsa surfaces.ini
+_SURFACE_FRICTION: dict[str, float] = {
+    "ASPHALT": 0.96,
+    "CONCRETE": 0.94,
+    "GRAVEL": 0.65,
+    "DIRT": 0.60,
+    "GRASS": 0.55,
+}
 
 
 def _to_id(name: str) -> str:
@@ -78,10 +87,11 @@ class AssettoCorsaGenerator(BaseGenerator):
 
     def _write_surfaces_ini(self, root: Path, track: Track) -> None:
         surface = track.surface.value.upper()
+        friction = _SURFACE_FRICTION.get(surface, 0.96)
         lines = [
             "[SURFACE_0]",
             f"KEY={surface}",
-            "FRICTION=0.96",
+            f"FRICTION={friction}",
             "DAMPING=0.0",
             "WAV=",
             "WAV_PITCH=0",
@@ -164,8 +174,8 @@ class AssettoCorsaGenerator(BaseGenerator):
             f"MODEL={car.manufacturer} {car.name}\n"
             f"SCREEN_NAME={car.manufacturer} {car.name}\n"
             f"TOTALMASS={car.mass_kg:.0f}\n"
-            f"INERTIA=1500 1700 200\n"
-            f"FUEL=100\n"
+            "INERTIA=1500 1700 200\n"
+            "FUEL=100\n"
         )
         self._write_file(root / "data" / "car.ini", content)
 
@@ -174,8 +184,8 @@ class AssettoCorsaGenerator(BaseGenerator):
         content = (
             "[ENGINE_DATA]\n"
             f"LIMITER={eng.max_rpm}\n"
-            f"MINIMUM=900\n"
-            f"FUEL_CONSUMPTION=2.65\n"
+            "MINIMUM=900\n"
+            "FUEL_CONSUMPTION=2.65\n"
             "\n"
             "[HEADER]\n"
             f"DISPLACEMENT={eng.displacement_cc:.0f}\n"

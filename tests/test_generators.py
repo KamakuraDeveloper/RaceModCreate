@@ -89,6 +89,26 @@ class TestAssettoCorsaTrack:
         assert "ASPHALT" in content
         assert "IS_VALID_TRACK=1" in content
 
+    def test_surfaces_ini_friction_asphalt(self, tmp_path, sample_track):
+        gen = AssettoCorsaGenerator(output_dir=tmp_path)
+        root = gen.generate_track(sample_track)
+        content = (root / "data" / "surfaces.ini").read_text()
+        assert "FRICTION=0.96" in content
+
+    def test_surfaces_ini_friction_dirt(self, tmp_path):
+        track = Track(name="Dirt Track", location="Test", length_m=2000.0, surface=SurfaceType.DIRT)
+        gen = AssettoCorsaGenerator(output_dir=tmp_path)
+        root = gen.generate_track(track)
+        content = (root / "data" / "surfaces.ini").read_text()
+        assert "FRICTION=0.6" in content
+
+    def test_surfaces_ini_friction_gravel(self, tmp_path):
+        track = Track(name="Gravel Track", location="Test", length_m=2000.0, surface=SurfaceType.GRAVEL)
+        gen = AssettoCorsaGenerator(output_dir=tmp_path)
+        root = gen.generate_track(track)
+        content = (root / "data" / "surfaces.ini").read_text()
+        assert "FRICTION=0.65" in content
+
     def test_creates_map_ini(self, tmp_path, sample_track):
         gen = AssettoCorsaGenerator(output_dir=tmp_path)
         root = gen.generate_track(sample_track)
