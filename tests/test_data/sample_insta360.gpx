@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Insta360 Studio"
+     xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>大井松田カートランド走行データ</name>
+    <trkseg>
+      <trkpt lat="35.34160" lon="139.15130">
+        <ele>120.5</ele>
+        <time>2024-01-15T10:30:00Z</time>
+      </trkpt>
+      <trkpt lat="35.34168" lon="139.15142">
+        <ele>120.7</ele>
+        <time>2024-01-15T10:30:02Z</time>
+      </trkpt>
+      <trkpt lat="35.34183" lon="139.15158">
+        <ele>120.9</ele>
+        <time>2024-01-15T10:30:04Z</time>
+      </trkpt>
+      <trkpt lat="35.34195" lon="139.15172">
+        <ele>121.1</ele>
+        <time>2024-01-15T10:30:06Z</time>
+      </trkpt>
+      <trkpt lat="35.34200" lon="139.15188">
+        <ele>121.3</ele>
+        <time>2024-01-15T10:30:08Z</time>
+      </trkpt>
+      <trkpt lat="35.34195" lon="139.15200">
+        <ele>121.1</ele>
+        <time>2024-01-15T10:30:10Z</time>
+      </trkpt>
+      <trkpt lat="35.34180" lon="139.15210">
+        <ele>120.8</ele>
+        <time>2024-01-15T10:30:13Z</time>
+      </trkpt>
+      <trkpt lat="35.34165" lon="139.15200">
+        <ele>120.5</ele>
+        <time>2024-01-15T10:30:16Z</time>
+      </trkpt>
+      <trkpt lat="35.34158" lon="139.15178">
+        <ele>120.2</ele>
+        <time>2024-01-15T10:30:19Z</time>
+      </trkpt>
+      <trkpt lat="35.34152" lon="139.15155">
+        <ele>119.9</ele>
+        <time>2024-01-15T10:30:22Z</time>
+      </trkpt>
+      <trkpt lat="35.34160" lon="139.15130">
+        <ele>120.5</ele>
+        <time>2024-01-15T10:30:26Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
