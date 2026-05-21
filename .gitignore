@@ -1,47 +1,38 @@
-# Modelica - an object-oriented language for modeling of cyber-physical systems
-# https://modelica.org/
-# Ignore temporary files, build results, simulation files
-
-## Modelica-specific files
-*~
-*.bak
-*.bak-mo
-*.mof
-\#*\#
-*.moe
-*.mol
-
-## Build artefacts
-*.exe
-*.exp
-*.o
-*.pyc
-*.egg-info/
+# Python
 __pycache__/
-.pytest_cache/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Distribution / packaging
 dist/
 build/
+*.egg-info/
+*.egg
+MANIFEST
 
-## Simulation files
-*.mat
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
 
-## Package files
-*.gz
-*.rar
-*.tar
-*.zip
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
 
-## Dymola-specific files
-buildlog.txt
-dsfinal.txt
-dsin.txt
-dslog.txt
-dsmodel*
-dsres.txt
-dymosim*
-request
-stat
-status
-stop
-success
-*.
+# mypy / ruff / linters
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -44,6 +44,16 @@ class TestTrack:
         assert len(track.sectors) == 2
         assert track.sectors[0].name == "S1"
 
+    def test_sector_total_mismatch_raises(self):
+        sectors = [Sector("S1", 1000.0), Sector("S2", 1000.0)]  # total 2000, but length 4000
+        with pytest.raises(ValueError, match="sector lengths"):
+            self._make_track(sectors=sectors)
+
+    def test_sector_total_matches_length(self):
+        sectors = [Sector("S1", 1600.0), Sector("S2", 2400.0)]
+        track = self._make_track(sectors=sectors)  # total == 4000
+        assert len(track.sectors) == 2
+
     def test_invalid_length_raises(self):
         with pytest.raises(ValueError, match="length_m"):
             self._make_track(length_m=0)
@@ -71,6 +81,14 @@ class TestSector:
         s = Sector("Sector 1", 1200.5)
         assert s.name == "Sector 1"
         assert s.length_m == 1200.5
+
+    def test_invalid_length_raises(self):
+        with pytest.raises(ValueError, match="length_m"):
+            Sector("S1", 0)
+
+    def test_negative_length_raises(self):
+        with pytest.raises(ValueError, match="length_m"):
+            Sector("S1", -500.0)
 
 
 # ---------------------------------------------------------------------------

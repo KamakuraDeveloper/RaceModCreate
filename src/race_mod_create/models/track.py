@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List
 
 
 class SurfaceType(str, Enum):
@@ -21,6 +20,10 @@ class Sector:
 
     name: str
     length_m: float  # metres
+
+    def __post_init__(self) -> None:
+        if self.length_m <= 0:
+            raise ValueError("Sector length_m must be a positive number.")
 
 
 @dataclass
@@ -44,7 +47,7 @@ class Track:
     length_m: float
     pit_boxes: int = 20
     surface: SurfaceType = SurfaceType.ASPHALT
-    sectors: List[Sector] = field(default_factory=list)
+    sectors: list[Sector] = field(default_factory=list)
     description: str = ""
     author: str = "Unknown"
     version: str = "1.0"
@@ -56,3 +59,10 @@ class Track:
             raise ValueError("pit_boxes must be a non-negative integer.")
         if not isinstance(self.surface, SurfaceType):
             self.surface = SurfaceType(self.surface)
+        if self.sectors:
+            total = sum(s.length_m for s in self.sectors)
+            if abs(total - self.length_m) > 1.0:
+                raise ValueError(
+                    f"Sum of sector lengths ({total:.1f} m) does not match "
+                    f"track length_m ({self.length_m:.1f} m)."
+                )

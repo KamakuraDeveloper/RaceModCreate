@@ -99,42 +99,46 @@ def main(argv: list[str] | None = None) -> int:
     generator_cls = _SIMULATORS[args.simulator]
     generator = generator_cls(output_dir=args.output)
 
-    if args.command == "track":
-        track = Track(
-            name=args.name,
-            location=args.location,
-            length_m=args.length,
-            pit_boxes=args.pit_boxes,
-            surface=SurfaceType(args.surface),
-            description=args.description,
-            author=args.author,
-            version=args.version,
-        )
-        result = generator.generate_track(track)
-        print(f"[{generator.simulator_name}] Track MOD generated: {result}")
+    try:
+        if args.command == "track":
+            track = Track(
+                name=args.name,
+                location=args.location,
+                length_m=args.length,
+                pit_boxes=args.pit_boxes,
+                surface=SurfaceType(args.surface),
+                description=args.description,
+                author=args.author,
+                version=args.version,
+            )
+            result = generator.generate_track(track)
+            print(f"[{generator.simulator_name}] Track MOD generated: {result}")
 
-    elif args.command == "car":
-        engine = EngineSpec(
-            displacement_cc=args.displacement,
-            cylinders=args.cylinders,
-            max_power_kw=args.max_power_kw,
-            max_torque_nm=args.max_torque_nm,
-            max_rpm=args.max_rpm,
-            naturally_aspirated=not args.turbo,
-        )
-        car = Car(
-            name=args.name,
-            manufacturer=args.manufacturer,
-            car_class=CarClass(args.car_class),
-            year=args.year,
-            engine=engine,
-            mass_kg=args.mass_kg,
-            description=args.description,
-            author=args.author,
-            version=args.version,
-        )
-        result = generator.generate_car(car)
-        print(f"[{generator.simulator_name}] Car MOD generated: {result}")
+        elif args.command == "car":
+            engine = EngineSpec(
+                displacement_cc=args.displacement,
+                cylinders=args.cylinders,
+                max_power_kw=args.max_power_kw,
+                max_torque_nm=args.max_torque_nm,
+                max_rpm=args.max_rpm,
+                naturally_aspirated=not args.turbo,
+            )
+            car = Car(
+                name=args.name,
+                manufacturer=args.manufacturer,
+                car_class=CarClass(args.car_class),
+                year=args.year,
+                engine=engine,
+                mass_kg=args.mass_kg,
+                description=args.description,
+                author=args.author,
+                version=args.version,
+            )
+            result = generator.generate_car(car)
+            print(f"[{generator.simulator_name}] Car MOD generated: {result}")
+
+    except ValueError as exc:
+        parser.error(str(exc))
 
     return 0
 

@@ -51,7 +51,7 @@ race-mod-create car \
   --output ./mods
 ```
 
-Use `--turbo` for forced-induction engines. Use `--surface` to specify the road surface (`asphalt`, `concrete`, `gravel`, `dirt`, `grass`).
+Use `--turbo` for forced-induction engines. Use `--surface` (track command only) to specify the road surface (`asphalt`, `concrete`, `gravel`, `dirt`, `grass`).
 
 ### Python API
 
